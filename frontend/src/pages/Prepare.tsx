@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchCustomers, getClosingAdvice } from "../api";
 import type { Customer } from "../types";
@@ -9,27 +9,27 @@ export default function Prepare() {
   const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [initialGenerated, setInitialGenerated] = useState(false);
+
+  const generate = useCallback(async (c: Customer) => {
+    setGenerating(true);
+    setAdvice("");
+    const result = await getClosingAdvice(c as unknown as Record<string, string>);
+    setAdvice(result.advice);
+    setGenerating(false);
+  }, []);
 
   useEffect(() => {
-    fetchCustomers().then((list: Customer[]) => {
+    void fetchCustomers().then((list: Customer[]) => {
       const found = list.find((c) => c.id === id);
       setCustomer(found || null);
       setLoading(false);
+      if (found && !initialGenerated) {
+        setInitialGenerated(true);
+        void generate(found);
+      }
     });
-  }, [id]);
-
-  const generate = async () => {
-    if (!customer) return;
-    setGenerating(true);
-    setAdvice("");
-    const result = await getClosingAdvice(customer as unknown as Record<string, string>);
-    setAdvice(result.advice);
-    setGenerating(false);
-  };
-
-  useEffect(() => {
-    if (customer) generate();
-  }, [customer]);
+  }, [id, generate, initialGenerated]);
 
   if (loading) {
     return <div className="loading"><div className="spinner" /> 読み込み中...</div>;
@@ -60,7 +60,7 @@ export default function Prepare() {
       <div className="card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <h2 style={{ margin: 0 }}>AIアドバイス</h2>
-          <button className="btn btn-outline" onClick={generate} disabled={generating}>
+          <button className="btn btn-outline" onClick={() => customer && generate(customer)} disabled={generating}>
             {generating ? "生成中..." : "再生成"}
           </button>
         </div>

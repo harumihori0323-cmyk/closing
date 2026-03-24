@@ -40,4 +40,5 @@ coverage/
 
 # Project specific
 backend/customers.json
+backend/db/*.sqlite
 .appgenius_temp

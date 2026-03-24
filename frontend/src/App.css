@@ -4,7 +4,7 @@
   justify-content: space-between;
   padding: 0 24px;
   height: 56px;
-  background: #1a1a2e;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
   color: #fff;
   position: sticky;
   top: 0;
@@ -34,12 +34,12 @@
 
 .nav-link:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-link.active {
   color: #fff;
-  background: #3a3a5c;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .main-content {

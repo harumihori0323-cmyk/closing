@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchCustomers, deleteCustomer } from "../api";
 import type { Customer } from "../types";
@@ -6,20 +6,23 @@ import type { Customer } from "../types";
 export default function CustomerList() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, refresh] = useReducer((x: number) => x + 1, 0);
 
-  const load = async () => {
-    setLoading(true);
-    const data = await fetchCustomers();
-    setCustomers(data);
-    setLoading(false);
-  };
-
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    fetchCustomers().then((data: Customer[]) => {
+      if (!cancelled) {
+        setCustomers(data);
+        setLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [refreshKey]);
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`「${name}」を削除しますか？`)) return;
     await deleteCustomer(id);
-    load();
+    refresh();
   };
 
   if (loading) {

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: closing-support
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://cl.milkgodo.com
