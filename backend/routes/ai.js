@@ -4,10 +4,20 @@ const { config } = require("../config");
 const { validateBody, aiPrepareSchema, aiRespondSchema } = require("../middleware/validate");
 
 const router = Router();
-const anthropic = new Anthropic({ apiKey: config.anthropicApiKey });
+const anthropic = config.anthropicApiKey
+  ? new Anthropic({ apiKey: config.anthropicApiKey })
+  : null;
+
+// APIキーチェックミドルウェア
+function requireApiKey(req, res, next) {
+  if (!anthropic) {
+    return res.status(503).json({ error: "AI機能は現在利用できません。ANTHROPIC_API_KEYが設定されていません。" });
+  }
+  next();
+}
 
 // クロージング準備：話すべきポイント生成
-router.post("/prepare", validateBody(aiPrepareSchema), async (req, res, next) => {
+router.post("/prepare", requireApiKey, validateBody(aiPrepareSchema), async (req, res, next) => {
   const { customer } = req.body;
   try {
     const message = await anthropic.messages.create({
@@ -46,7 +56,7 @@ router.post("/prepare", validateBody(aiPrepareSchema), async (req, res, next) =>
 });
 
 // リアルタイム応答支援：相手の発言に対する最適な返答生成
-router.post("/respond", validateBody(aiRespondSchema), async (req, res, next) => {
+router.post("/respond", requireApiKey, validateBody(aiRespondSchema), async (req, res, next) => {
   const { customer, transcript, latestUtterance } = req.body;
   try {
     const message = await anthropic.messages.create({

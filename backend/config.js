@@ -28,7 +28,7 @@ const config = {
 // 環境変数バリデーション
 function validateConfig() {
   if (!config.anthropicApiKey) {
-    throw new Error("ANTHROPIC_API_KEY is required in .env");
+    console.warn("WARNING: ANTHROPIC_API_KEY is not set. AI features will be unavailable.");
   }
 }
 
