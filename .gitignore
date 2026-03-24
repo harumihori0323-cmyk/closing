@@ -1,5 +1,43 @@
-node_modules
+# Environment variables（機密情報保護）
 .env
+.env.local
+.env.production
+.env*.local
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Build outputs
+build/
+dist/
+.next/
 frontend/dist
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright
+playwright-report/
+test-results/
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+.coverage
+
+# Project specific
 backend/customers.json
 .appgenius_temp
