@@ -4,7 +4,8 @@ services:
     runtime: node
     region: singapore
     plan: free
-    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    nodeVersion: "20"
+    buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci
     startCommand: cd backend && node server.js
     envVars:
       - key: NODE_ENV
